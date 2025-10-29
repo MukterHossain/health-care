@@ -55,13 +55,15 @@ export default function Login() {
 
       if (res.success) {
         const authStatus = await checkAuthStatus();
+        console.log("authStatus", authStatus)
 
         if(authStatus.isAuthenticated && authStatus.user){
           const {role} = authStatus.user;
 
           switch(role){
             case "ADMIN":
-              router.push("/dashboard/admin");
+              router.push("/dashboard");
+              // router.push("/dashboard/admin");
               break;
             case "DOCTOR":
               router.push("/dashboard/doctor");
