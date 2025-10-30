@@ -32,7 +32,7 @@ const doctors = [
 
 const DoctorCard = ({ doctor }: { doctor: typeof doctors[0] }) => {
     return (
-        <Card className="text-center overflow-hidden hover:shadow-xl transition-shadow duration-300">
+        <Card className="text-center  overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="bg-blue-50/50 items-center p-6">
                 <Image 
                     src={doctor.image} 
@@ -61,7 +61,7 @@ const DoctorCard = ({ doctor }: { doctor: typeof doctors[0] }) => {
 
 const TopRatedDoctors = () => {
   return (
-    <section className="bg-blue-50/50 py-24">
+    <section className="bg-blue-50/50 py-24 ">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-foreground">Our Top Rated Doctor</h2>

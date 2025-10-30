@@ -45,8 +45,26 @@ const StepCard = ({ icon: Icon, title, description, index }: { icon: React.Eleme
 
 const Steps = () => {
   return (
-    <section className="py-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 w-full relative bg-white dark:bg-card ">
+      
+  {/* Teal Glow Top */}
+  <div
+    className="absolute inset-0 z-0"
+    style={{
+      background: "#ffffff",
+      backgroundImage: `
+        radial-gradient(
+          circle at center center,
+          rgba(212, 241, 239, 0.5),
+          transparent 70%
+        )
+      `,
+      filter: "blur(80px)",
+      backgroundRepeat: "no-repeat",
+    }}
+  />
+
+      <div className="container mx-auto px-4 sm:px-6 relative lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-foreground">Easy Steps to Get Your Solution</h2>
           <p className="text-muted-foreground mt-4">
