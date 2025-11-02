@@ -3,11 +3,17 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Menu } from "lucide-react";
-import checkAuthStatus from "@/utility/auth";
+import { UseUser } from "@/Providers/UserProvider";
+import { logOutUser } from "@/utility/logOut";
+// import checkAuthStatus from "@/utility/auth";
 
-const { user } = await checkAuthStatus();
+// const { user } = await checkAuthStatus();
 const PublicNavbar =() => {
-  const { role } = user || { role: 'guest' };
+  // const { role } = user || { role: 'guest' };
+  const {user} = UseUser()
+    const role = user?.role || 'guest';
+
+    console.log("user", user)
   const navItems = [
     { href: "consultation", label: "Consultation" },
     { href: "health-plans", label: "Health Plans" },
@@ -16,7 +22,7 @@ const PublicNavbar =() => {
     { href: "ngos", label: "NGOs" },
   ];
   if (role === 'ADMIN') {
-    navItems.push({ href: "/dashboard/admin", label: "Admin Dashboard" });
+    navItems.push({ href: "/admin/dashboard", label: "Admin Dashboard" });
   }
   return (
     <header className="sticky top-0 z-50 h-16 w-full  flex items-center justify-around bg-background/95 px-4 shadow-md gap-x-4 text-primary">
@@ -37,7 +43,7 @@ const PublicNavbar =() => {
         </nav>
         <div className="hidden md:flex items-center space-x-2">
           {role !== 'guest' ? (
-            <Button variant="destructive">Logout</Button>
+            <Button variant="destructive" onClick={() => logOutUser()}>Logout</Button>
           ) : (
             <Link href="/login" className="text-lg font-medium">
               <Button>Login</Button>
@@ -66,7 +72,7 @@ const PublicNavbar =() => {
               <div className="border-t pt-4 flex flex-col space-y-4">
                 <div className="flex justify-center"></div>
                 {role!== 'guest' ? (
-                    <Button variant="destructive">Logout</Button>
+                    <Button variant="destructive" onClick={() => logOutUser()}>Logout</Button>
                   ) : (
                     <Link href="/login" className="text-lg font-medium">
                       <Button>Login</Button>

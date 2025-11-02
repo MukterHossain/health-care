@@ -22,11 +22,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import checkAuthStatus from "@/utility/auth"
+// import { UseUser } from "@/Providers/UserProvider"
+import Link from "next/link"
+// import checkAuthStatus from "@/utility/auth"
 
-const { user } = await checkAuthStatus();
+// const { user } = await checkAuthStatus();
 
-const {role} = user || {role: "guest"}
+// const {role} = user || {role: "guest"}
 
 const navMainItems = [
     {
@@ -51,27 +53,33 @@ const navMainItems = [
     // },
   ]
 
-  if(role === 'ADMIN'){
-    navMainItems.push(
-      {
-        title: "Manage Doctors",
-        url: "/dashboard/admin/manage-doctors",
-        icon: IconSettings,
-      },
-      {
-        title: "Manage Patients",
-        url: "/dashboard/admin/manage-patients",
-        icon: IconUsers,
-      }
-    )
-  }
+
+  // if(role === 'ADMIN'){
+  //   navMainItems.push(
+  //     {
+  //       title: "Manage Doctors",
+  //       url: "/dashboard/admin/manage-doctors",
+  //       icon: IconSettings,
+  //     },
+  //     {
+  //       title: "Manage Patients",
+  //       url: "/dashboard/admin/manage-patients",
+  //       icon: IconUsers,
+  //     }
+  //   )
+  // }
   
 
 const data = {
+  // user: {
+  //   name: user?.name,
+  //   email: user?.email,
+  //   avatar: user?.imageUrl,
+  // },
   user: {
-    name: user?.name,
-    email: user?.email,
-    avatar: user?.imageUrl,
+    name: '',
+    email: '',
+    avatar: '',
   },
   navMain: navMainItems,
   navSecondary: [
@@ -94,6 +102,22 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // const {user, setUser} = UseUser()
+  // const role = user?.role;
+  // if(role === 'ADMIN'){
+  //   navMainItems.push(
+  //     {
+  //       title: "Manage Doctors",
+  //       url: "/admin/dashboard/manage-doctors",
+  //       icon: IconSettings,
+  //     },
+  //     {
+  //       title: "Manage Patients",
+  //       url: "/admin/dashboard/manage-patients",
+  //       icon: IconUsers,
+  //     }
+  //   )
+  // }
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -103,10 +127,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

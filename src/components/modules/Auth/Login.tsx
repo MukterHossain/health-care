@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import loginUser from "@/utility/login";
 import checkAuthStatus from "@/utility/auth";
+import { UseUser } from "@/Providers/UserProvider";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -35,6 +36,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const {setUser} = UseUser()
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -52,24 +54,25 @@ export default function Login() {
     //Hashed string for "super@admin": $2b$10$Yd4pQGXKFP5opoELqSdE1uBhcXwTc74u3/D7lag8XHGXJ4S5ZQeLS
     try {
       const res = await loginUser(data.email, data.password); //{success: true, message: 'User loggedin successfully!', data: {needPasswordChange: false}}
-
+      
       if (res.success) {
         const authStatus = await checkAuthStatus();
         console.log("authStatus", authStatus)
+        setUser(authStatus.user); //setUser Immiditaly.
 
         if(authStatus.isAuthenticated && authStatus.user){
           const {role} = authStatus.user;
 
           switch(role){
             case "ADMIN":
-              router.push("/dashboard");
+              router.push("/admin/dashboard");
               // router.push("/dashboard/admin");
               break;
             case "DOCTOR":
-              router.push("/dashboard/doctor");
+              router.push("/doctor/dashboard");
               break;
             case "PATIENT":
-              router.push("/dashboard/patient");
+              router.push("/patient/dashboard");
               break;
             default:
               router.push("/");
