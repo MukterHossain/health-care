@@ -17,7 +17,7 @@ export default function Login() {
     toast.error("Login failed. Please try again.");
     if (state && state.errors) {
       const error = state.errors.find((err: any) => err.field === fieldName);
-      return error.message;
+      return error?.message;
     } else {
       return null;
     }
