@@ -9,7 +9,7 @@ import { loginUser } from "@/service/auth/loginUser";
 import { toast } from "sonner";
 
 
-export default function Login() {
+export default function Login({ redirect }: { redirect?: string }) {
 
   const [state, formAction, isPending] = useActionState(loginUser, null);
 
@@ -26,6 +26,7 @@ export default function Login() {
 
   return (
     <form action={formAction}>
+     {redirect &&  <input type="hidden" name="redirect" value={redirect} />}
       <FieldGroup>
         <div className="grid grid-cols-1 gap-4">
           {/* Email */}

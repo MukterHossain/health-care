@@ -1,19 +1,21 @@
-"use client";
+
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Menu } from "lucide-react";
-import { UseUser } from "@/Providers/UserProvider";
+// import { UseUser } from "@/Providers/UserProvider";
 import { logOutUser } from "@/utility/logOut";
+import { getCookie } from "@/service/auth/tokenHandlers";
+import LogoutButton from "./LogoutButton";
 // import checkAuthStatus from "@/utility/auth";
 
 // const { user } = await checkAuthStatus();
-const PublicNavbar =() => {
+const PublicNavbar = async () => {
   // const { role } = user || { role: 'guest' };
-  const {user} = UseUser()
-    const role = user?.role || 'guest';
+  // const {user} = UseUser()
+  //   const role = user?.role || 'guest';
 
-    console.log("user", user)
+  // console.log("user", user)
   const navItems = [
     { href: "consultation", label: "Consultation" },
     { href: "health-plans", label: "Health Plans" },
@@ -21,9 +23,10 @@ const PublicNavbar =() => {
     { href: "diagnostics", label: "Diagnostics" },
     { href: "ngos", label: "NGOs" },
   ];
-  if (role === 'ADMIN') {
-    navItems.push({ href: "/admin/dashboard", label: "Admin Dashboard" });
-  }
+  // if (role === 'ADMIN') {
+  //   navItems.push({ href: "/admin/dashboard", label: "Admin Dashboard" });
+  // }
+  const accessToken = await getCookie("accessToken");
   return (
     <header className="sticky top-0 z-50 h-16 w-full  flex items-center justify-around bg-background/95 px-4 shadow-md gap-x-4 text-primary">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -42,10 +45,10 @@ const PublicNavbar =() => {
           ))}
         </nav>
         <div className="hidden md:flex items-center space-x-2">
-          {role !== 'guest' ? (
-            <Button variant="destructive" onClick={() => logOutUser()}>Logout</Button>
+          {accessToken ? (
+            <LogoutButton />
           ) : (
-            <Link href="/login" className="text-lg font-medium">
+            <Link href="/login">
               <Button>Login</Button>
             </Link>
           )}
@@ -71,13 +74,13 @@ const PublicNavbar =() => {
               ))}
               <div className="border-t pt-4 flex flex-col space-y-4">
                 <div className="flex justify-center"></div>
-                {role!== 'guest' ? (
-                    <Button variant="destructive" onClick={() => logOutUser()}>Logout</Button>
-                  ) : (
-                    <Link href="/login" className="text-lg font-medium">
-                      <Button>Login</Button>
-                    </Link>
-                  )}
+                {accessToken ? (
+                  <LogoutButton />
+                ) : (
+                  <Link href="/login">
+                    <Button>Login</Button>
+                  </Link>
+                )}
               </div>
             </nav>
           </SheetContent>
