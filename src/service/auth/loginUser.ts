@@ -4,7 +4,7 @@
 import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from "@/lib/auth-utils";
 import { parse } from "cookie"
 import jwt,{ JwtPayload } from "jsonwebtoken";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import z from "zod";
 import { setCookie } from "./tokenHandlers";
@@ -117,12 +117,12 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         if (redirectTo) {
             const requestedPath = redirectTo.toString();
             if (isValidRedirectForRole(requestedPath, userRole)) {
-                redirect(requestedPath);
+                redirect(`${requestedPath}?loggedIn=true`);
             } else {
-                redirect(getDefaultDashboardRoute(userRole));
+                 redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
             }
         }else{
-            redirect(getDefaultDashboardRoute(userRole))
+            redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
         }
 
         // return result;
@@ -134,6 +134,6 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
         console.log("validatation", error)
         console.log(error);
-        return { error: "Login failed" };
+        return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : "Login Failed. You might have entered incorrect email or password."}` }
     }
 }

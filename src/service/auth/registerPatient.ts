@@ -82,6 +82,6 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
             throw error;
         }
         console.log(error);
-        return { error: "Registration failed" };
+        return { success: false, message: `${process.env.NODE_ENV === 'development' ? error.message : "Login Failed. You might have entered incorrect email or password."}` }
     }
 }

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { useActionState} from "react";
+import { useActionState, useEffect} from "react";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { loginUser } from "@/service/auth/loginUser";
 import { toast } from "sonner";
@@ -12,9 +12,9 @@ import { toast } from "sonner";
 export default function Login({ redirect }: { redirect?: string }) {
 
   const [state, formAction, isPending] = useActionState(loginUser, null);
-
+  console.log("state", state)
   const getFieldError = (fieldName: string) => {
-    toast.error("Login failed. Please try again.");
+    // toast.error("Login failed. Please try again.");
     if (state && state.errors) {
       const error = state.errors.find((err: any) => err.field === fieldName);
       return error?.message;
@@ -23,6 +23,11 @@ export default function Login({ redirect }: { redirect?: string }) {
     }
   };
   console.log(state);
+  useEffect(() => {
+    if (state && !state.success && state.message) {
+      toast.error(state.message || "Login failed. Please try again.");
+    }
+  }, [state]);
 
   return (
     <form action={formAction}>
