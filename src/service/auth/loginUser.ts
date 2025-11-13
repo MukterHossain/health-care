@@ -8,6 +8,8 @@ import jwt,{ JwtPayload } from "jsonwebtoken";
 import { redirect } from "next/navigation";
 import z from "zod";
 import { setCookie } from "./tokenHandlers";
+import { serverFetch } from "@/lib/server-fetch";
+import { zodValidator } from "@/lib/zodValidator";
 
 const loginValidationZodSchema = z.object({
 
@@ -24,33 +26,41 @@ const loginValidationZodSchema = z.object({
 export const loginUser = async (_currentState: any, formData: any): Promise<any> => {
     try {
         const redirectTo = formData.get('redirect') || null;
-        console.log("redirect from server", redirectTo)
+        // console.log("redirect from server", redirectTo)
         let accessTokenObject: null | any = null;
         let refreshTokenObject: null | any = null;
 
-        const loginData = {
+        const payload = {
             email: formData.get('email'),
             password: formData.get('password'),
         }
 
-        const validatedFields = loginValidationZodSchema.safeParse(loginData);
-        console.log("validatedFields", validatedFields)
-
-        if (!validatedFields.success) {
-            return {
-                success: false,
-                errors: validatedFields.error.issues.map(issue => {
-                    return {
-                        field: issue.path[0],
-                        message: issue.message,
-                    }
-                })
-            }
+        if(zodValidator(payload, loginValidationZodSchema).success === false){
+            return zodValidator(payload, loginValidationZodSchema)
         }
 
-        const res = await fetch("http://localhost:5000/api/v1/auth/login", {
-            method: "POST",
-            body: JSON.stringify(loginData),
+        const validatedPayload = zodValidator(payload, loginValidationZodSchema).data;
+
+        // const validatedFields = loginValidationZodSchema.safeParse(loginData);
+        // console.log("validatedFields", validatedFields)
+
+        // if (!validatedFields.success) {
+        //     return {
+        //         success: false,
+        //         errors: validatedFields.error.issues.map(issue => {
+        //             return {
+        //                 field: issue.path[0],
+        //                 message: issue.message,
+        //             }
+        //         })
+        //     }
+        // }
+
+        // const res = await fetch("http://localhost:5000/api/v1/auth/login",)
+        const res = await serverFetch.post("/auth/login", {
+            // method: "POST",
+            body: JSON.stringify(validatedPayload),
+            // body: JSON.stringify(loginData),
             headers: {
                 "Content-Type": "application/json",
             },
