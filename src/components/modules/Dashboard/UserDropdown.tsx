@@ -1,22 +1,30 @@
+"use client";
+
 import LogoutButton from "@/components/shared/LogoutButton";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { logoutUser } from "@/service/auth/logoutUser";
 import { UserInfo } from "@/types/user.interface";
 import { Settings, User } from "lucide-react";
 import Link from "next/link";
 
-
-
 interface UserDropdownProps {
   userInfo: UserInfo;
 }
+
 const UserDropdown = ({ userInfo }: UserDropdownProps) => {
-      const handleLogout = async () => {
+  const handleLogout = async () => {
     await logoutUser();
   };
-    return (
-        <DropdownMenu>
+  return (
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="rounded-full">
           <span className="text-sm font-semibold">
@@ -56,7 +64,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-    );
+  );
 };
 
 export default UserDropdown;
