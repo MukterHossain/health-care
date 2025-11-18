@@ -6,95 +6,37 @@ import { deleteCookie, getCookie } from './service/auth/tokenHandlers';
 
 
 
-// type UserRole = 'ADMIN' | 'DOCTOR' | 'PATIENT';
-
-// type RouteConfig = {
-//   exact: string[];
-//   patterns: RegExp[];
-// }
-// const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-
-
-// const adminProtectedRoutes: RouteConfig = {
-//   patterns: [/^\/admin/], // Routes starting with /admin/*
-//   exact: [], // "/admins"
-// }
-// const commonProtectedRoutes = {
-//   exact: ["/my-profile", "/settings"],
-//   patterns: [], // [/password/change-password, /password/reset-password => /password/*]
-
-// }
-// const doctorProtectedRoutes: RouteConfig = {
-//   patterns: [/^\/doctor/], // Routes starting with /doctor/* , /assitants, /appointments/*
-//   exact: [], // "/assistants"
-// }
-// const patientProtectedRoutes: RouteConfig = {
-//   patterns: [/^\/dashboard/], // Routes starting with /dashboard/*
-//   exact: [], // "/dashboard"
-// }
-
-// const isAuthRoute = (pathname: string) => {
-//   console.log("pathname", pathname)
-//   return authRoutes.some((route: string) => route === pathname);
-// }
-
-// const isRouteMatches = (pathname: string, routes: RouteConfig): boolean => {
-//   if (routes.exact.includes(pathname)) {
-//     return true;
-//   }
-//   return routes.patterns.some((pattern: RegExp) => pattern.test(pathname));
-
-// }
-// const getRouteWoner = (pathname: string): "ADMIN" | "DOCTOR" | "PATIENT" | "COMMON" | null => {
-//   if (isRouteMatches(pathname, adminProtectedRoutes)) {
-//     return "ADMIN";
-//   }
-//   if (isRouteMatches(pathname, doctorProtectedRoutes)) {
-//     return "DOCTOR";
-//   }
-//   if (isRouteMatches(pathname, patientProtectedRoutes)) {
-//     return "PATIENT";
-//   }
-//   if (isRouteMatches(pathname, commonProtectedRoutes)) {
-//     return "COMMON";
-//   }
-//   return null;
-// }
-
-
-// const getDefaultDashboardRoute = (role: UserRole): string => {
-//   if (role === "ADMIN") {
-//     return "/admin/dashboard";
-//   }
-//   if (role === "DOCTOR") {
-//     return "/doctor/dashboard";
-//   }
-//   if (role === "PATIENT") {
-//     return "/dashboard";
-//   }
-//   return "/"
-// }
-
 export async function proxy(request: NextRequest) {
   // const cookieStore = await cookies()
   const pathname = request.nextUrl.pathname;
 
   // const accessToken = request.cookies.get('accessToken')?.value || null;
   // const refreshToken = request.cookies.get('refreshToken')?.value || null;
- const accessToken = await getCookie("accessToken") || null;
+  const accessToken = await getCookie("accessToken") || null;
+  
   let userRole: UserRole | null = null;
+
   if (accessToken) {
-    const verifiedToken: JwtPayload | string = jwt.verify(accessToken, process.env.JWT_SECRET as string)
-    if (typeof verifiedToken === "string") {
-      // cookieStore.delete('accessToken')
-      // cookieStore.delete('refreshToken')
-      await deleteCookie('accessToken');
-      await deleteCookie('refreshToken');
-      return NextResponse.redirect(new URL(`/login`, request.url))
+    try {
+      const verifiedToken: JwtPayload | string = jwt.verify(accessToken, process.env.JWT_SECRET as string)
+      if (typeof verifiedToken === "string") {
+        // cookieStore.delete('accessToken')
+        // cookieStore.delete('refreshToken')
+        await deleteCookie('accessToken');
+        await deleteCookie('refreshToken');
+        return NextResponse.redirect(new URL(`/login`, request.url))
+      }
+      userRole = verifiedToken.role
+    } catch (error) {
+      console.log(error)
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
     }
-    userRole = verifiedToken.role
+
   }
   console.log("userRole", userRole)
+  // console.log("accessToken", accessToken)
 
   const routerOwner = getRouteOwner(pathname);
   const isAuth = isAuthRoute(pathname);
@@ -122,13 +64,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
- // Rule 4 : User is trying to access role based protected route
-    if (routerOwner === "ADMIN" || routerOwner === "DOCTOR" || routerOwner === "PATIENT") {
-        if (userRole !== routerOwner) {
-            return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url))
-        }
+  // Rule 4 : User is trying to access role based protected route
+  if (routerOwner === "ADMIN" || routerOwner === "DOCTOR" || routerOwner === "PATIENT") {
+    if (userRole !== routerOwner) {
+      return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url))
     }
-    console.log(userRole);
+  }
+  console.log(userRole);
 
   return NextResponse.next()
 }
