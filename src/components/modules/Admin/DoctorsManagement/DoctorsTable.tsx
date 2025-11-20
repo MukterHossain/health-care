@@ -59,6 +59,8 @@ const DoctorsTable = ({ doctors, specialities }: DoctorsTableProps) => {
     }
   };
 
+  console.log("doctors", doctors)
+
   return (
     <>
       <ManagementTable

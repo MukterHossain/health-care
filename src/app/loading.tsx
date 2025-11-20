@@ -2,12 +2,8 @@ import HeartbeatLoader from "@/components/shared/Loader";
 
 
 
-const Loading = () => {
-    return (
-        <>
-            <HeartbeatLoader />
-        </>
-    );
+const GlobalLoading = () => {
+  return <HeartbeatLoader />;
 };
 
-export default Loading;
+export default GlobalLoading;
