@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Menu } from "lucide-react";
-// import { UseUser } from "@/Providers/UserProvider";
 import { logOutUser } from "@/utility/logOut";
 import { getCookie } from "@/service/auth/tokenHandlers";
 import LogoutButton from "./LogoutButton";

@@ -6,15 +6,15 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhos
 // /auth/login
 const serverFetchHelper = async (endpoint: string, options: RequestInit): Promise<Response> => {
     const { headers, ...restOptions } = options;
-
     const accessToken = await getCookie("accessToken");
 
     const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
         headers: {
+            Cookie: accessToken ? `accessToken=${accessToken}` : "",
             ...headers,
             // ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
             // ...(accessToken ? { "Authorization": accessToken } : {}),
-            Cookie: accessToken ? `accessToken=${accessToken}` : "",
+
         },
         ...restOptions,
     })
