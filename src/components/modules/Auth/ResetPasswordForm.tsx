@@ -23,6 +23,7 @@ const ResetPasswordForm = ({ redirect }: { redirect?: string }) => {
       toast.error(state.message);
     }
   }, [state]);
+  console.log("resetPassword", state)
 
   return (
     <form action={formAction}>

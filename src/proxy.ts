@@ -3,12 +3,30 @@ import type { NextRequest } from 'next/server'
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getDefaultDashboardRoute, getRouteOwner, isAuthRoute, UserRole } from './lib/auth-utils';
 import { deleteCookie, getCookie } from './service/auth/tokenHandlers';
+import { getUserInfo } from './service/auth/getUserInfo';
+import { getNewAccessToken } from './service/auth/auth.service';
 
 
 
 export async function proxy(request: NextRequest) {
   // const cookieStore = await cookies()
   const pathname = request.nextUrl.pathname;
+   const hasTokenRefreshedParam = request.nextUrl.searchParams.has('tokenRefreshed');
+
+    // If coming back after token refresh, remove the param and continue
+    if (hasTokenRefreshedParam) {
+        const url = request.nextUrl.clone();
+        url.searchParams.delete('tokenRefreshed');
+        return NextResponse.redirect(url);
+    }
+
+    const tokenRefreshResult = await getNewAccessToken();
+    // If token was refreshed, redirect to same page to fetch with new token
+    if (tokenRefreshResult?.tokenRefreshed) {
+        const url = request.nextUrl.clone();
+        url.searchParams.set('tokenRefreshed', 'true');
+        return NextResponse.redirect(url);
+    }
 
   // const accessToken = request.cookies.get('accessToken')?.value || null;
   // const refreshToken = request.cookies.get('refreshToken')?.value || null;
@@ -59,12 +77,30 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Rule 3 : User is trying to access common protected route
+      // Rule 3 : User need password change
+
+    if (accessToken) {
+        const userInfo = await getUserInfo();
+        if (userInfo.needPasswordChange) {
+            if (pathname !== "/reset-password") {
+                const resetPasswordUrl = new URL("/reset-password", request.url);
+                resetPasswordUrl.searchParams.set("redirect", pathname);
+                return NextResponse.redirect(resetPasswordUrl);
+            }
+            return NextResponse.next();
+        }
+
+        if (userInfo && !userInfo.needPasswordChange && pathname === '/reset-password') {
+            return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
+        }
+    }
+
+  // Rule 4 : User is trying to access common protected route
   if (routerOwner === "COMMON") {
     return NextResponse.next();
   }
 
-  // Rule 4 : User is trying to access role based protected route
+  // Rule 5 : User is trying to access role based protected route
   if (routerOwner === "ADMIN" || routerOwner === "DOCTOR" || routerOwner === "PATIENT") {
     if (userRole !== routerOwner) {
       return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url))

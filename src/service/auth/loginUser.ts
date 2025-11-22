@@ -3,7 +3,7 @@
 
 import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from "@/lib/auth-utils";
 import { parse } from "cookie"
-import jwt,{ JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 // import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import z from "zod";
@@ -35,29 +35,13 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             password: formData.get('password'),
         }
 
-        if(zodValidator(payload, loginValidationZodSchema).success === false){
+        if (zodValidator(payload, loginValidationZodSchema).success === false) {
             return zodValidator(payload, loginValidationZodSchema)
         }
 
         const validatedPayload = zodValidator(payload, loginValidationZodSchema).data;
 
-        // const validatedFields = loginValidationZodSchema.safeParse(loginData);
-        // console.log("validatedFields", validatedFields)
-
-        // if (!validatedFields.success) {
-        //     return {
-        //         success: false,
-        //         errors: validatedFields.error.issues.map(issue => {
-        //             return {
-        //                 field: issue.path[0],
-        //                 message: issue.message,
-        //             }
-        //         })
-        //     }
-        // }
-
-        // const res = await fetch("http://localhost:5000/api/v1/auth/login",)
-        const res = await serverFetch.post("/auth/login", {
+     const res = await serverFetch.post("/auth/login", {
             // method: "POST",
             body: JSON.stringify(validatedPayload),
             // body: JSON.stringify(loginData),
@@ -96,7 +80,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
 
         // const cookieStore = await cookies()
-      await setCookie("accessToken", accessTokenObject.accessToken, {
+        await setCookie("accessToken", accessTokenObject.accessToken, {
             secure: true,
             httpOnly: true,
             maxAge: parseInt(accessTokenObject['Max-Age']) || 1000 * 60 * 60,
@@ -112,7 +96,7 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
             sameSite: refreshTokenObject['SameSite'] || "none",
         },
         )
-         const verifiedToken: JwtPayload | string = jwt.verify(accessTokenObject.accessToken, process.env.JWT_SECRET as string);
+        const verifiedToken: JwtPayload | string = jwt.verify(accessTokenObject.accessToken, process.env.JWT_SECRET as string);
 
         if (typeof verifiedToken === "string") {
             throw new Error("Invalid token");
@@ -120,18 +104,33 @@ export const loginUser = async (_currentState: any, formData: any): Promise<any>
         }
 
         const userRole: UserRole = verifiedToken.role;
-        if(!result.success){
+        if (!result.success) {
             throw new Error(result.message || "Login failed");
         }
+
+        // new code 11/22
+        if (redirectTo && result.data.needPasswordChange) {
+            const requestedPath = redirectTo.toString();
+            if (isValidRedirectForRole(requestedPath, userRole)) {
+                redirect(`/reset-password?redirect=${requestedPath}`);
+            } else {
+                redirect("/reset-password");
+            }
+        }
+
+        if (result.data.needPasswordChange) {
+            redirect("/reset-password");
+        }
+        
 
         if (redirectTo) {
             const requestedPath = redirectTo.toString();
             if (isValidRedirectForRole(requestedPath, userRole)) {
                 redirect(`${requestedPath}?loggedIn=true`);
             } else {
-                 redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
+                redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
             }
-        }else{
+        } else {
             redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
         }
 
