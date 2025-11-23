@@ -1,11 +1,60 @@
-import React from 'react';
+import MySchedulesFilters from "@/components/modules/Doctor/MyScheduleFilters";
+import MySchedulesHeader from "@/components/modules/Doctor/MyScheduleHeader";
+import MySchedulesTable from "@/components/modules/Doctor/MyScheduleTable";
+import TablePagination from "@/components/shared/TablePagination";
+import { TableSkeleton } from "@/components/shared/TableSkeleton";
+import { queryStringFormatter } from "@/lib/formatters";
+import {
+  getAvailableSchedules,
+  getDoctorOwnSchedules,
+} from "@/service/doctor/doctorScedule.services";
+import { Suspense } from "react";
 
-const MySchedulesPage = () => {
-    return (
-        <div>
-            <h1>My Schedules</h1>
-        </div>
-    );
+interface DoctorMySchedulesPageProps {
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    isBooked?: string;
+  }>;
+}
+
+const DoctorMySchedulesPage = async ({
+  searchParams,
+}: DoctorMySchedulesPageProps) => {
+  const params = await searchParams;
+
+  const queryString = queryStringFormatter(params);
+  const myDoctorsScheduleResponse = await getDoctorOwnSchedules(queryString);
+  const availableSchedulesResponse = await getAvailableSchedules();
+
+//   console.log({
+//     myDoctorsScheduleResponse,
+//     availableSchedulesResponse,
+//   });
+//   console.log(myDoctorsScheduleResponse.data[0]);
+
+  const schedules = myDoctorsScheduleResponse?.data || [];
+  const meta = myDoctorsScheduleResponse?.meta;
+  const totalPages = Math.ceil((meta?.total || 1) / (meta?.limit || 1));
+
+  console.log("schedules", schedules);
+  return (
+    <div className="space-y-6">
+      <MySchedulesHeader
+        availableSchedules={availableSchedulesResponse?.data || []}
+      />
+
+      <MySchedulesFilters />
+
+      <Suspense fallback={<TableSkeleton columns={5} rows={10} />}>
+        <MySchedulesTable schedules={schedules} />
+        <TablePagination
+          currentPage={meta?.page || 1}
+          totalPages={totalPages || 1}
+        />
+      </Suspense>
+    </div>
+  );
 };
 
-export default MySchedulesPage;
+export default DoctorMySchedulesPage;
