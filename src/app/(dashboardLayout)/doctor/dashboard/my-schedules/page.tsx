@@ -1,6 +1,6 @@
-import MySchedulesFilters from "@/components/modules/Doctor/MyScheduleFilters";
-import MySchedulesHeader from "@/components/modules/Doctor/MyScheduleHeader";
-import MySchedulesTable from "@/components/modules/Doctor/MyScheduleTable";
+import MySchedulesFilters from "@/components/modules/Doctor/MySchedules/MyScheduleFilters";
+import MySchedulesHeader from "@/components/modules/Doctor/MySchedules/MyScheduleHeader";
+import MySchedulesTable from "@/components/modules/Doctor/MySchedules/MyScheduleTable";
 import TablePagination from "@/components/shared/TablePagination";
 import { TableSkeleton } from "@/components/shared/TableSkeleton";
 import { queryStringFormatter } from "@/lib/formatters";
@@ -27,17 +27,15 @@ const DoctorMySchedulesPage = async ({
   const myDoctorsScheduleResponse = await getDoctorOwnSchedules(queryString);
   const availableSchedulesResponse = await getAvailableSchedules();
 
-//   console.log({
-//     myDoctorsScheduleResponse,
-//     availableSchedulesResponse,
-//   });
-//   console.log(myDoctorsScheduleResponse.data[0]);
+  console.log({
+    myDoctorsScheduleResponse,
+    availableSchedulesResponse,
+  });
 
   const schedules = myDoctorsScheduleResponse?.data || [];
   const meta = myDoctorsScheduleResponse?.meta;
   const totalPages = Math.ceil((meta?.total || 1) / (meta?.limit || 1));
 
-  console.log("schedules", schedules);
   return (
     <div className="space-y-6">
       <MySchedulesHeader

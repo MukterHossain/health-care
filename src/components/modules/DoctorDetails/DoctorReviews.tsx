@@ -59,8 +59,6 @@ export default function DoctorReviews({ doctorId }: DoctorReviewsProps) {
     loadReviews();
   }, [doctorId]);
 
-  console.log("state", reviews);
-
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star

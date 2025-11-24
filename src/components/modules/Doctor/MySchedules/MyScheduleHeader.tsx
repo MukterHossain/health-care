@@ -31,8 +31,6 @@ const MySchedulesHeader = ({ availableSchedules }: MySchedulesHeaderProps) => {
     setIsDialogOpen(false);
   };
 
-  console.log("availableSchedules", availableSchedules)
-
   return (
     <>
       <BookScheduleDialog

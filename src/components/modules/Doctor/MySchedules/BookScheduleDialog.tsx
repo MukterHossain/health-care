@@ -11,7 +11,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { createDoctorSchedule, getAvailableSchedules } from "@/service/doctor/doctorScedule.services";
+import {
+  createDoctorSchedule,
+  getAvailableSchedules,
+} from "@/service/doctor/doctorScedule.services";
 import { ISchedule } from "@/types/schedule.interface";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
@@ -120,10 +123,6 @@ export default function BookScheduleDialog({
   const groupedSchedules = groupSchedulesByDate();
 
   console.log({ availableSchedules, groupedSchedules });
-
-  console.log("availableSchedules", availableSchedules);
-
-  console.log("groupedSchedules", groupedSchedules);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

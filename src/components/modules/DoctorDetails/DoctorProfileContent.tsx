@@ -26,7 +26,6 @@ const DoctorProfileContent = ({ doctor }: DoctorProfileContentProps) => {
     .toUpperCase()
     .slice(0, 2);
 
-    // console.log("doctors", doctor);
   return (
     <div className="space-y-6">
       {/* Doctor Header Card */}
@@ -52,6 +51,7 @@ const DoctorProfileContent = ({ doctor }: DoctorProfileContentProps) => {
                 )}
               </Avatar>
             </div>
+
             {/* Doctor Info */}
             <div className="flex-1 space-y-4">
               <div>
