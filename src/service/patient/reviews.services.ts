@@ -38,6 +38,7 @@ export async function createReview(data: IReviewFormData) {
         });
 
         const result = await response.json();
+        console.log("From create Review", result)
         return result;
     } catch (error: any) {
         console.error("Error creating review:", error);

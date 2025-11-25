@@ -13,6 +13,7 @@ export async function createAppointment(data: IAppointmentFormData) {
         });
 
         const result = await response.json();
+        console.log("Patient Service", result)
         return result;
     } catch (error: any) {
         console.error("Error creating appointment:", error);

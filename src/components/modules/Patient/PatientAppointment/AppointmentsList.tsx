@@ -59,6 +59,8 @@ const AppointmentsList = ({ appointments }: AppointmentsListProps) => {
     );
   };
 
+  console.log("AppointmentList", appointments)
+
   if (appointments.length === 0) {
     return (
       <Card className="border-dashed">
@@ -78,7 +80,7 @@ const AppointmentsList = ({ appointments }: AppointmentsListProps) => {
   }
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {appointments.map((appointment) => (
+      {appointments?.map((appointment) => (
         <Card
           key={appointment.id}
           className="hover:shadow-lg transition-shadow"
