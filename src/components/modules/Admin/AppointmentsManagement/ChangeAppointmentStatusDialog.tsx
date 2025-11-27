@@ -48,7 +48,6 @@ const ChangeAppointmentStatusDialog = ({
   if (appointment && open && selectedStatus !== appointment.status) {
     setSelectedStatus(appointment.status);
   }
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!appointment) return;
@@ -58,7 +57,6 @@ const ChangeAppointmentStatusDialog = ({
         appointment.id!,
         selectedStatus
       );
-
       if (result?.success) {
         toast.success("Appointment status updated successfully!");
         onSuccess();
@@ -70,6 +68,8 @@ const ChangeAppointmentStatusDialog = ({
 
   if (!appointment) return null;
 
+  // console.log("appointment", appointment)
+  console.log("selectedStatus", selectedStatus)
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
