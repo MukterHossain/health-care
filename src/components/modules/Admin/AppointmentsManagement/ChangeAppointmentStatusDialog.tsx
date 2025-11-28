@@ -45,9 +45,15 @@ const ChangeAppointmentStatusDialog = ({
   const [isPending, startTransition] = useTransition();
 
   // Reset status when dialog opens with different appointment
-  if (appointment && open && selectedStatus !== appointment.status) {
-    setSelectedStatus(appointment.status);
-  }
+  // if (appointment && open && selectedStatus !== appointment.status) {
+  //   setSelectedStatus(appointment.status);
+  // }
+
+  // new add code for status change
+  const handleStatusChange = (status: AppointmentStatus) => {
+    setSelectedStatus(status);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!appointment) return;
@@ -72,7 +78,7 @@ const ChangeAppointmentStatusDialog = ({
   console.log("selectedStatus", selectedStatus)
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent key={appointment?.id}>
         <DialogHeader>
           <DialogTitle>Change Appointment Status</DialogTitle>
           <DialogDescription>
@@ -99,9 +105,10 @@ const ChangeAppointmentStatusDialog = ({
               <label className="text-sm font-medium">New Status</label>
               <Select
                 value={selectedStatus}
-                onValueChange={(value) =>
-                  setSelectedStatus(value as AppointmentStatus)
-                }
+                // onValueChange={(value) =>
+                //   setSelectedStatus(value as AppointmentStatus)
+                // }
+                onValueChange={handleStatusChange}
                 disabled={isPending}
               >
                 <SelectTrigger>
